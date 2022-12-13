@@ -1,0 +1,15 @@
+version: '3'
+services:
+  mongo:
+    image: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: 
+      MONGO_INITDB_ROOT_PASSWORD: 
+      MONGO_INITDB_DATABASE: book_reviews
+    ports:
+      - 27018:27017
+    volumes:
+      - book_data:/home/hanh/Desktop/hanh/Slides/20221/Project-3/book-review
+volumes:
+  book_data:
+    driver: local
