@@ -21,7 +21,6 @@ import { UserModule } from './modules/user/user.module';
         CommentModule,
         ReviewModule,
         UserModule,
-        ,
     ],
     controllers: [AppController],
     exports: [],

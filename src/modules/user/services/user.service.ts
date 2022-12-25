@@ -77,30 +77,16 @@ export class UserService {
     }
 
     async findByUsername(username: string) {
-        const [user] = await this.userModel.aggregate([
-            {
-                $match: {
-                    username,
-                },
-            },
-            {
-                $limit: 1,
-            },
-        ]);
+        const user = this.userModel.findOne({
+            username,
+        });
         return user;
     }
 
     async findById(userId: string) {
-        const [user] = await this.userModel.aggregate([
-            {
-                $match: {
-                    _id: new ObjectId(userId),
-                },
-            },
-            {
-                $limit: 1,
-            },
-        ]);
+        const user = this.userModel.findById(userId);
+        if (!user) throw new NotFoundException();
+
         return user;
     }
 
@@ -158,22 +144,27 @@ export class UserService {
     }
 
     async addToBookShelf(userId: string, bookId: string) {
-        const updatedUser = await this.userModel.findByIdAndUpdate(
-            {
-                _id: new ObjectId(userId),
-            },
-            {
-                $push: {
-                    bookShelfIds: new ObjectId(bookId),
-                },
-            },
-            {
-                lean: true,
-                select: 'username bookShelfIds',
-            },
-        );
+        const toUpdateUser = await this.findById(userId);
+        if (!toUpdateUser) throw new NotFoundException();
 
-        if (!updatedUser) throw new NotFoundException();
+        const isBookInBookShelf = toUpdateUser.bookShelfIds.some(
+            (id) => id.toString() === bookId,
+        );
+        const updateQuery = isBookInBookShelf
+            ? {
+                  $pull: {
+                      bookShelfIds: {
+                          $eq: new ObjectId(bookId),
+                      },
+                  },
+              }
+            : {
+                  $push: {
+                      bookShelfIds: new ObjectId(bookId),
+                  },
+              };
+        await toUpdateUser.update(updateQuery);
+        const updatedUser = await this.findById(toUpdateUser._id);
         return updatedUser;
     }
 }

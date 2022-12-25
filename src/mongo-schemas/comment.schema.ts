@@ -20,10 +20,10 @@ export class Comment extends MongoBaseSchema {
     content: string;
 
     @Prop({ required: true, type: Types.ObjectId })
-    author: ObjectId;
+    authorId: ObjectId;
 
     @Prop({ required: true, type: Types.ObjectId })
-    review: ObjectId;
+    reviewId: ObjectId;
 }
 
 const BaseCommentSchema = SchemaFactory.createForClass(Comment);

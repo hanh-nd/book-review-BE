@@ -23,7 +23,7 @@ export class AuthController {
             const tokens = await this.authService.register(registerBody);
             return new SuccessResponse(tokens);
         } catch (error) {
-            throw new InternalServerErrorException(error);
+            throw error;
         }
     }
 
@@ -36,7 +36,7 @@ export class AuthController {
             const tokens = await this.authService.login(loginBody);
             return new SuccessResponse(tokens);
         } catch (error) {
-            throw new InternalServerErrorException(error);
+            throw error;
         }
     }
 }

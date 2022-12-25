@@ -13,3 +13,12 @@ export const createBookSchema = Joi.object().keys({
 export const bookGetListSchema = Joi.object().keys({
     ...CommonListQuerySchema,
 });
+
+export const updateBookSchema = Joi.object().keys({
+    name: Joi.string().trim().optional(),
+    imageUrl: Joi.string().trim().optional(),
+    describe: Joi.string().trim().optional(),
+    author: Joi.string().trim().optional(),
+    publisher: Joi.string().trim().optional(),
+    publicationYear: Joi.number().min(0),
+});

@@ -2,17 +2,27 @@ import {
     Body,
     Controller,
     Get,
-    InternalServerErrorException,
     Param,
     Patch,
     Post,
+    Query,
     Req,
+    UseGuards,
 } from '@nestjs/common';
+import { AccessTokenGuard } from 'src/common/guards';
 import { SuccessResponse } from 'src/common/helper/response';
-import { JoiValidationPipe, TrimBodyPipe } from 'src/common/pipes';
-import { RequestWithUser } from './../../../dist/common/interfaces.d';
+import { RequestWithUser } from 'src/common/interfaces';
+import {
+    JoiValidationPipe,
+    RemoveEmptyQueryPipe,
+    TrimBodyPipe,
+} from 'src/common/pipes';
 import { CreateReviewBody } from './review.dto';
-import { createReviewBodySchema } from './review.validator';
+import { IReviewGetListQuery } from './review.interface';
+import {
+    createReviewBodySchema,
+    reviewGetListSchema,
+} from './review.validator';
 import { ReviewService } from './services/review.service';
 
 @Controller('/reviews')
@@ -20,6 +30,7 @@ export class ReviewController {
     constructor(private reviewService: ReviewService) {}
 
     @Post('/')
+    @UseGuards(AccessTokenGuard)
     async createReview(
         @Req() req: RequestWithUser,
         @Body(new TrimBodyPipe(), new JoiValidationPipe(createReviewBodySchema))
@@ -27,11 +38,29 @@ export class ReviewController {
     ) {
         try {
             const userId = req.user.sub;
-            createReviewBody.authorId = userId;
-            const review = await this.reviewService.create(createReviewBody);
+            const review = await this.reviewService.create(
+                userId,
+                createReviewBody,
+            );
             return new SuccessResponse(review);
         } catch (error) {
-            throw new InternalServerErrorException(error);
+            throw error;
+        }
+    }
+
+    @Get('/')
+    async getReviewList(
+        @Query(
+            new RemoveEmptyQueryPipe(),
+            new JoiValidationPipe(reviewGetListSchema),
+        )
+        query: IReviewGetListQuery,
+    ) {
+        try {
+            const reviewList = await this.reviewService.getReviewList(query);
+            return new SuccessResponse(reviewList);
+        } catch (error) {
+            throw error;
         }
     }
 
@@ -41,7 +70,7 @@ export class ReviewController {
             const review = await this.reviewService.getReviewDetail(reviewId);
             return new SuccessResponse(review);
         } catch (error) {
-            throw new InternalServerErrorException(error);
+            throw error;
         }
     }
 
@@ -55,7 +84,7 @@ export class ReviewController {
             const review = await this.reviewService.react(reviewId, userId);
             return new SuccessResponse(review);
         } catch (error) {
-            throw new InternalServerErrorException(error);
+            throw error;
         }
     }
 }

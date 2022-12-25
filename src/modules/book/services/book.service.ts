@@ -9,7 +9,7 @@ import {
     OrderBy,
     OrderDirection,
 } from './../../../common/constants';
-import { CreateBookBody } from './../book.dto';
+import { CreateBookBody, UpdateBookBody } from './../book.dto';
 
 @Injectable()
 export class BookService {
@@ -67,5 +67,20 @@ export class BookService {
         } catch (error) {
             throw error;
         }
+    }
+
+    async findById(id: string) {
+        const book = await this.bookModel.findById(id);
+        return book;
+    }
+
+    async update(id: string, body: UpdateBookBody) {
+        const book = await this.bookModel.findByIdAndUpdate(id, body);
+        return book;
+    }
+
+    async delete(id: string) {
+        const result = await this.bookModel.findByIdAndDelete(id);
+        return result;
     }
 }

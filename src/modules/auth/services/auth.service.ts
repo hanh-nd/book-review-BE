@@ -1,6 +1,7 @@
 import {
     BadRequestException,
     Injectable,
+    NotFoundException,
     UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -35,7 +36,10 @@ export class AuthService {
             password: hashedPassword,
         });
         const tokens = await this.createTokens(newUser._id, newUser.username);
-        return tokens;
+        return {
+            ...tokens,
+            user: newUser,
+        };
     }
 
     async login(loginBody: ILoginBody) {
@@ -45,7 +49,7 @@ export class AuthService {
             );
 
             if (!existedUser) {
-                throw new Error();
+                throw new NotFoundException();
             }
 
             const passwordMatch = await argon2.verify(
@@ -54,7 +58,7 @@ export class AuthService {
             );
 
             if (!passwordMatch) {
-                throw new Error();
+                throw new BadRequestException();
             }
 
             const tokens = await this.createTokens(
@@ -62,7 +66,10 @@ export class AuthService {
                 existedUser.username,
             );
 
-            return tokens;
+            return {
+                ...tokens,
+                user: existedUser,
+            };
         } catch (error) {
             throw new UnauthorizedException('Invalid username or password!');
         }

@@ -4,4 +4,4 @@ import { Book } from 'src/mongo-schemas/book.schema';
 
 export type BookDocument = Document<Book>;
 
-export interface IBookGetListQuery extends ICommonGetListQuery {}
+export type IBookGetListQuery = ICommonGetListQuery;

@@ -1,5 +1,8 @@
 export class CreateReviewBody {
-    authorId?: string;
     bookId: string;
+    content: string;
+}
+
+export class UpdateReviewBody {
     content: string;
 }

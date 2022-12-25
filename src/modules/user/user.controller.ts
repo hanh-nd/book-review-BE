@@ -46,16 +46,6 @@ export class UserController {
         }
     }
 
-    @Get('/:keyword')
-    async getUserById(@Param('keyword') keyword: string) {
-        try {
-            const user = await this.userService.getUserDetail(keyword);
-            return new SuccessResponse(user);
-        } catch (error) {
-            throw new InternalServerErrorException(error);
-        }
-    }
-
     @Patch('/update')
     @UseGuards(AccessTokenGuard)
     async updateProfile(
@@ -78,7 +68,7 @@ export class UserController {
         }
     }
 
-    @Patch('/addToBookShelf')
+    @Patch('/add-to-book-shelf')
     @UseGuards(AccessTokenGuard)
     async addToBookShelf(
         @Req() req: RequestWithUser,
@@ -94,6 +84,16 @@ export class UserController {
             return new SuccessResponse(user);
         } catch (error) {
             return new InternalServerErrorException(error);
+        }
+    }
+
+    @Get('/:keyword')
+    async getUserById(@Param('keyword') keyword: string) {
+        try {
+            const user = await this.userService.getUserDetail(keyword);
+            return new SuccessResponse(user);
+        } catch (error) {
+            throw new InternalServerErrorException(error);
         }
     }
 }
