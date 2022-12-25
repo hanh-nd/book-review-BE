@@ -1,3 +1,4 @@
+import { JwtService } from '@nestjs/jwt';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Comment, CommentSchema } from './../../mongo-schemas/comment.schema';
@@ -11,6 +12,6 @@ import { CommentService } from './services/comment.service';
         ]),
     ],
     controllers: [CommentController],
-    providers: [CommentService],
+    providers: [JwtService, CommentService],
 })
 export class CommentModule {}

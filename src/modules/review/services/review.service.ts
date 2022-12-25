@@ -145,7 +145,6 @@ export class ReviewService {
     async react(reviewId: string, userId: string) {
         const toUpdateReview = await this.reviewModel.findById(reviewId);
         if (!toUpdateReview) throw new NotFoundException();
-
         const isUserLiked = toUpdateReview.likeIds.some(
             (id) => id.toString() === userId,
         );

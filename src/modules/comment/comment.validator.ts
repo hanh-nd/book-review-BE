@@ -8,6 +8,7 @@ export const createCommentSchema = Joi.object().keys({
 
 export const commentGetListSchema = Joi.object().keys({
     ...CommonListQuerySchema,
+    reviewId: Joi.string().trim().optional(),
 });
 
 export const updateCommentSchema = Joi.object().keys({

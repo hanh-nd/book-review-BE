@@ -84,6 +84,7 @@ export class CommentController {
     }
 
     @Patch('/:id/react')
+    @UseGuards(AccessTokenGuard)
     async reactToComment(
         @Req() req: RequestWithUser,
         @Param('id') commentId: string,
