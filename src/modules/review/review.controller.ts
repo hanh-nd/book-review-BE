@@ -1,6 +1,7 @@
 import {
     Body,
     Controller,
+    Delete,
     Get,
     Param,
     Patch,
@@ -17,11 +18,12 @@ import {
     RemoveEmptyQueryPipe,
     TrimBodyPipe,
 } from 'src/common/pipes';
-import { CreateReviewBody } from './review.dto';
+import { CreateReviewBody, UpdateReviewBody } from './review.dto';
 import { IReviewGetListQuery } from './review.interface';
 import {
     createReviewBodySchema,
     reviewGetListSchema,
+    updateReviewBodySchema,
 } from './review.validator';
 import { ReviewService } from './services/review.service';
 
@@ -74,7 +76,25 @@ export class ReviewController {
         }
     }
 
+    @Patch('/:reviewId')
+    @UseGuards(AccessTokenGuard)
+    async updateReview(
+        @Req() req: RequestWithUser,
+        @Param('reviewId') id: string,
+        @Body(new TrimBodyPipe(), new JoiValidationPipe(updateReviewBodySchema))
+        body: UpdateReviewBody,
+    ) {
+        try {
+            const userId = req.user.sub;
+            const review = await this.reviewService.update(id, body);
+            return new SuccessResponse(review);
+        } catch (error) {
+            throw error;
+        }
+    }
+
     @Patch('/:reviewId/react')
+    @UseGuards(AccessTokenGuard)
     async reactToReview(
         @Req() req: RequestWithUser,
         @Param('reviewId') reviewId: string,
@@ -83,6 +103,21 @@ export class ReviewController {
             const userId = req.user.sub;
             const review = await this.reviewService.react(reviewId, userId);
             return new SuccessResponse(review);
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    @Delete('/:reviewId')
+    @UseGuards(AccessTokenGuard)
+    async deleteReview(
+        @Req() req: RequestWithUser,
+        @Param('reviewId') id: string,
+    ) {
+        try {
+            const userId = req.user.sub;
+            const result = await this.reviewService.delete(id);
+            return new SuccessResponse(result);
         } catch (error) {
             throw error;
         }

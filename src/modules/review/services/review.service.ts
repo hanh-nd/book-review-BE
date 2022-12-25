@@ -97,7 +97,9 @@ export class ReviewService {
 
             result.totalItems = result.totalItems[0].count;
             return result;
-        } catch (error) {}
+        } catch (error) {
+            throw error;
+        }
     }
 
     async getReviewDetail(reviewId: string) {
