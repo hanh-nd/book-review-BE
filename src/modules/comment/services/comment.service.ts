@@ -19,8 +19,10 @@ export class CommentService {
     ) {}
 
     generateMatchGetListQuery(query: ICommentGetListQuery) {
-        const { reviewId } = query;
-        const matchQuery: any = {};
+        const { reviewId, parentId = null } = query;
+        const matchQuery: any = {
+            parentId,
+        };
         if (reviewId) {
             matchQuery.reviewId = new ObjectId(reviewId);
         }
@@ -28,11 +30,18 @@ export class CommentService {
     }
 
     async createComment(authorId: string, body: CreateCommentBody) {
-        const { content, reviewId } = body;
+        const { content, reviewId, parentId = null } = body;
+        let depth = 0;
+        if (parentId) {
+            const parent = await this.findById(parentId);
+            depth = parent.depth + 1;
+        }
         const createdComment = await this.commentModel.create({
             content,
             reviewId: new ObjectId(reviewId),
             authorId: new ObjectId(authorId),
+            parentId: parentId ? new ObjectId(parentId) : null,
+            depth,
         });
         return createdComment;
     }
@@ -62,6 +71,25 @@ export class CommentService {
                     },
                 },
                 {
+                    $graphLookup: {
+                        from: MongoCollection.COMMENT,
+                        startWith: '$_id',
+                        connectFromField: '_id',
+                        connectToField: 'parentId',
+                        as: 'children',
+                    },
+                },
+                {
+                    $unwind: '$children',
+                },
+                {
+                    $sort: {
+                        'children.depth': -1,
+                        [`children.${orderBy}`]:
+                            orderDirection === OrderDirection.ASC ? 1 : -1,
+                    },
+                },
+                {
                     $lookup: {
                         from: MongoCollection.REVIEW,
                         localField: 'reviewId',
@@ -86,6 +114,142 @@ export class CommentService {
                     },
                 },
                 {
+                    $lookup: {
+                        from: MongoCollection.REVIEW,
+                        localField: 'children.reviewId',
+                        foreignField: '_id',
+                        as: 'children.review',
+                    },
+                },
+                {
+                    $lookup: {
+                        from: MongoCollection.USER,
+                        localField: 'children.authorId',
+                        foreignField: '_id',
+                        as: 'children.author',
+                    },
+                },
+                {
+                    $lookup: {
+                        from: MongoCollection.USER,
+                        localField: 'children.likeIds',
+                        foreignField: '_id',
+                        as: 'children.likes',
+                    },
+                },
+                {
+                    $group: {
+                        _id: '$_id',
+                        content: {
+                            $first: '$content',
+                        },
+                        authorId: {
+                            $first: '$authorId',
+                        },
+                        author: {
+                            $first: '$author',
+                        },
+                        reviewId: {
+                            $first: '$reviewId',
+                        },
+                        review: {
+                            $first: '$review',
+                        },
+                        likeIds: {
+                            $first: '$likeIds',
+                        },
+                        likes: {
+                            $first: '$likes',
+                        },
+                        depth: {
+                            $first: '$depth',
+                        },
+                        children: {
+                            $push: '$children',
+                        },
+                    },
+                },
+                {
+                    $addFields: {
+                        children: {
+                            $reduce: {
+                                input: '$children',
+                                initialValue: {
+                                    currentLevel: 0,
+                                    currentLevelChildren: [],
+                                    previousLevelChildren: [],
+                                },
+                                in: {
+                                    $let: {
+                                        vars: {
+                                            prev: {
+                                                $cond: {
+                                                    if: {
+                                                        $eq: [
+                                                            '$$value.currentLevel',
+                                                            '$$this.depth',
+                                                        ],
+                                                    },
+                                                    then: '$$value.previousLevelChildren',
+                                                    else: '$$value.currentLevelChildren',
+                                                },
+                                            },
+                                            current: {
+                                                $cond: {
+                                                    if: {
+                                                        $eq: [
+                                                            '$$value.currentLevel',
+                                                            '$$this.depth',
+                                                        ],
+                                                    },
+                                                    then: '$$value.currentLevelChildren',
+                                                    else: [],
+                                                },
+                                            },
+                                        },
+                                        in: {
+                                            currentLevel: '$$this.depth',
+                                            previousLevelChildren: '$$prev',
+                                            currentLevelChildren: {
+                                                $concatArrays: [
+                                                    '$$current',
+                                                    [
+                                                        {
+                                                            $mergeObjects: [
+                                                                '$$this',
+                                                                {
+                                                                    children: {
+                                                                        $filter:
+                                                                            {
+                                                                                input: '$$prev',
+                                                                                as: 'child',
+                                                                                cond: {
+                                                                                    $eq: [
+                                                                                        '$$child.parentId',
+                                                                                        '$$this._id',
+                                                                                    ],
+                                                                                },
+                                                                            },
+                                                                    },
+                                                                },
+                                                            ],
+                                                        },
+                                                    ],
+                                                ],
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+                {
+                    $addFields: {
+                        children: '$children.currentLevelChildren',
+                    },
+                },
+                {
                     $facet: {
                         items: [],
                         totalItems: [
@@ -102,6 +266,14 @@ export class CommentService {
         } catch (error) {
             throw error;
         }
+    }
+
+    async findById(commentId: string) {
+        const comment = await this.commentModel.findById(commentId);
+        if (!comment) {
+            throw new NotFoundException();
+        }
+        return comment;
     }
 
     async updateComment(commentId: string, body: UpdateCommentBody) {

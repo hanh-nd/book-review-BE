@@ -27,6 +27,12 @@ export class Comment extends MongoBaseSchema {
 
     @Prop({ required: false, type: [Types.ObjectId] })
     likeIds: ObjectId[];
+
+    @Prop({ required: false, type: Types.ObjectId, default: null, index: true })
+    parentId: ObjectId;
+
+    @Prop({ required: false, type: Number, default: 0 })
+    depth: number;
 }
 
 const BaseCommentSchema = SchemaFactory.createForClass(Comment);
