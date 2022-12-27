@@ -6,4 +6,5 @@ export type CommentDocument = Document<Comment>;
 
 export interface ICommentGetListQuery extends ICommonGetListQuery {
     reviewId: string;
+    parentId?: string;
 }
