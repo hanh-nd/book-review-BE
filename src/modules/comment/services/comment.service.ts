@@ -21,7 +21,7 @@ export class CommentService {
     generateMatchGetListQuery(query: ICommentGetListQuery) {
         const { reviewId, parentId = null } = query;
         const matchQuery: any = {
-            parentId,
+            parentId: parentId ? new ObjectId(parentId) : null,
         };
         if (reviewId) {
             matchQuery.reviewId = new ObjectId(reviewId);
@@ -65,12 +65,6 @@ export class CommentService {
                     $skip: offset,
                 },
                 {
-                    $sort: {
-                        [orderBy]:
-                            orderDirection === OrderDirection.ASC ? 1 : -1,
-                    },
-                },
-                {
                     $graphLookup: {
                         from: MongoCollection.COMMENT,
                         startWith: '$_id',
@@ -80,7 +74,10 @@ export class CommentService {
                     },
                 },
                 {
-                    $unwind: '$children',
+                    $unwind: {
+                        path: '$children',
+                        preserveNullAndEmptyArrays: true,
+                    },
                 },
                 {
                     $sort: {
@@ -164,8 +161,45 @@ export class CommentService {
                         depth: {
                             $first: '$depth',
                         },
+                        createdAt: {
+                            $first: '$createdAt',
+                        },
+                        updatedAt: {
+                            $first: '$updatedAt',
+                        },
                         children: {
                             $push: '$children',
+                        },
+                    },
+                },
+                {
+                    $set: {
+                        children: {
+                            $let: {
+                                vars: {
+                                    firstChild: {
+                                        $arrayElemAt: ['$children', 0],
+                                    },
+                                },
+                                in: {
+                                    $let: {
+                                        vars: {
+                                            arrSize: {
+                                                $size: '$$firstChild.review',
+                                            },
+                                        },
+                                        in: {
+                                            $cond: {
+                                                if: {
+                                                    $gt: ['$$arrSize', 0],
+                                                },
+                                                then: '$children',
+                                                else: [],
+                                            },
+                                        },
+                                    },
+                                },
+                            },
                         },
                     },
                 },
@@ -250,6 +284,12 @@ export class CommentService {
                     },
                 },
                 {
+                    $sort: {
+                        [orderBy]:
+                            orderDirection === OrderDirection.ASC ? 1 : -1,
+                    },
+                },
+                {
                     $facet: {
                         items: [],
                         totalItems: [
@@ -261,7 +301,7 @@ export class CommentService {
                 },
             ]);
 
-            result.totalItems = result.totalItems[0].count;
+            result.totalItems = result.totalItems?.[0]?.count;
             return result;
         } catch (error) {
             throw error;
