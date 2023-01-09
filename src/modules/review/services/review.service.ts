@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
 import { Model } from 'mongoose';
 import { MongoCollection } from 'src/mongo-schemas/constant';
+import { Report } from 'src/mongo-schemas/report.schema';
 import { Review } from 'src/mongo-schemas/review.schema';
 import { IReviewGetListQuery } from '../review.interface';
 import {
@@ -10,11 +11,19 @@ import {
     DEFAULT_PAGE_VALUE,
     OrderBy,
     OrderDirection,
+    ReportType,
 } from './../../../common/constants';
-import { CreateReviewBody, UpdateReviewBody } from './../review.dto';
+import {
+    CreateReviewBody,
+    ReportReviewBody,
+    UpdateReviewBody,
+} from './../review.dto';
 @Injectable()
 export class ReviewService {
-    constructor(@InjectModel(Review.name) private reviewModel: Model<Review>) {}
+    constructor(
+        @InjectModel(Review.name) private reviewModel: Model<Review>,
+        @InjectModel(Report.name) private reportModel: Model<Report>,
+    ) {}
 
     generateMatchGetListQuery(query: IReviewGetListQuery) {
         const { bookId } = query;
@@ -170,5 +179,19 @@ export class ReviewService {
     async delete(reviewId: string) {
         const result = await this.reviewModel.findByIdAndDelete(reviewId);
         return result;
+    }
+
+    async reportReview(
+        reporterId: string,
+        reviewId: string,
+        body: ReportReviewBody,
+    ) {
+        const createdReport = await this.reportModel.create({
+            ...body,
+            reporterId: new ObjectId(reporterId),
+            targetId: new ObjectId(reviewId),
+            type: ReportType.REVIEW,
+        });
+        return createdReport;
     }
 }

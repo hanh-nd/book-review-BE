@@ -3,4 +3,5 @@ export enum MongoCollection {
     BOOK = 'Book',
     REVIEW = 'Review',
     COMMENT = 'Comment',
+    REPORT = "Report"
 }

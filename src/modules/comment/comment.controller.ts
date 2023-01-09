@@ -8,7 +8,7 @@ import {
     Post,
     Query,
     Req,
-    UseGuards,
+    UseGuards
 } from '@nestjs/common';
 import { AccessTokenGuard } from 'src/common/guards';
 import { SuccessResponse } from 'src/common/helper/response';
@@ -16,14 +16,18 @@ import { RequestWithUser } from 'src/common/interfaces';
 import {
     JoiValidationPipe,
     RemoveEmptyQueryPipe,
-    TrimBodyPipe,
+    TrimBodyPipe
 } from 'src/common/pipes';
-import { CreateCommentBody, UpdateCommentBody } from './comment.dto';
+import {
+    CreateCommentBody,
+    ReportCommentBody,
+    UpdateCommentBody
+} from './comment.dto';
 import { ICommentGetListQuery } from './comment.interface';
 import {
     commentGetListSchema,
     createCommentSchema,
-    updateCommentSchema,
+    updateCommentSchema
 } from './comment.validator';
 import { CommentService } from './services/comment.service';
 
@@ -104,6 +108,26 @@ export class CommentController {
         try {
             const userId = req.user.sub;
             const result = await this.commentService.deleteComment(id);
+            return new SuccessResponse(result);
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    @Post('/:id/report')
+    @UseGuards(AccessTokenGuard)
+    async reportComment(
+        @Req() req: RequestWithUser,
+        @Param('id') id: string,
+        @Body(new TrimBodyPipe()) body: ReportCommentBody,
+    ) {
+        try {
+            const userId = req.user.sub;
+            const result = await this.commentService.reportComment(
+                userId,
+                id,
+                body,
+            );
             return new SuccessResponse(result);
         } catch (error) {
             throw error;

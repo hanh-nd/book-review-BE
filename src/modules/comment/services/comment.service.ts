@@ -7,15 +7,22 @@ import {
     DEFAULT_PAGE_VALUE,
     OrderBy,
     OrderDirection,
+    ReportType
 } from 'src/common/constants';
 import { Comment } from 'src/mongo-schemas/comment.schema';
 import { MongoCollection } from 'src/mongo-schemas/constant';
-import { CreateCommentBody, UpdateCommentBody } from '../comment.dto';
+import { Report } from 'src/mongo-schemas/report.schema';
+import {
+    CreateCommentBody,
+    ReportCommentBody,
+    UpdateCommentBody
+} from '../comment.dto';
 import { ICommentGetListQuery } from '../comment.interface';
 @Injectable()
 export class CommentService {
     constructor(
         @InjectModel(Comment.name) private commentModel: Model<Comment>,
+        @InjectModel(Report.name) private reportModel: Model<Report>,
     ) {}
 
     generateMatchGetListQuery(query: ICommentGetListQuery) {
@@ -353,5 +360,19 @@ export class CommentService {
     async deleteComment(commentId: string) {
         const result = await this.commentModel.findByIdAndDelete(commentId);
         return result;
+    }
+
+    async reportComment(
+        reporterId: string,
+        commentId: string,
+        body: ReportCommentBody,
+    ) {
+        const createdReport = await this.reportModel.create({
+            ...body,
+            reporterId: new ObjectId(reporterId),
+            targetId: new ObjectId(commentId),
+            type: ReportType.COMMENT,
+        });
+        return createdReport;
     }
 }

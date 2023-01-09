@@ -18,7 +18,11 @@ import {
     RemoveEmptyQueryPipe,
     TrimBodyPipe,
 } from 'src/common/pipes';
-import { CreateReviewBody, UpdateReviewBody } from './review.dto';
+import {
+    CreateReviewBody,
+    ReportReviewBody,
+    UpdateReviewBody,
+} from './review.dto';
 import { IReviewGetListQuery } from './review.interface';
 import {
     createReviewBodySchema,
@@ -117,6 +121,26 @@ export class ReviewController {
         try {
             const userId = req.user.sub;
             const result = await this.reviewService.delete(id);
+            return new SuccessResponse(result);
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    @Post('/:reviewId/report')
+    @UseGuards(AccessTokenGuard)
+    async reportReview(
+        @Req() req: RequestWithUser,
+        @Param('reviewId') id: string,
+        @Body(new TrimBodyPipe()) body: ReportReviewBody,
+    ) {
+        try {
+            const userId = req.user.sub;
+            const result = await this.reviewService.reportReview(
+                userId,
+                id,
+                body,
+            );
             return new SuccessResponse(result);
         } catch (error) {
             throw error;

@@ -7,3 +7,7 @@ export class CreateCommentBody {
 export class UpdateCommentBody {
     content: string;
 }
+
+export class ReportCommentBody {
+    description?: string;
+}

@@ -55,3 +55,8 @@ export enum HttpStatus {
     INTERNAL_SERVER_ERROR = 500,
     SERVICE_UNAVAILABLE = 503,
 }
+
+export enum ReportType {
+    REVIEW = 'REVIEW',
+    COMMENT = 'COMMENT',
+}

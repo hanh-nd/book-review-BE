@@ -6,3 +6,7 @@ export class CreateReviewBody {
 export class UpdateReviewBody {
     content: string;
 }
+
+export class ReportReviewBody {
+    description?: string;
+}

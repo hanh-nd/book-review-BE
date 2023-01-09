@@ -1,6 +1,7 @@
-import { JwtService } from '@nestjs/jwt';
 import { Module } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
+import { Report, ReportSchema } from 'src/mongo-schemas/report.schema';
 import { Comment, CommentSchema } from './../../mongo-schemas/comment.schema';
 import { CommentController } from './comment.controller';
 import { CommentService } from './services/comment.service';
@@ -9,6 +10,7 @@ import { CommentService } from './services/comment.service';
     imports: [
         MongooseModule.forFeature([
             { name: Comment.name, schema: CommentSchema },
+            { name: Report.name, schema: ReportSchema },
         ]),
     ],
     controllers: [CommentController],
