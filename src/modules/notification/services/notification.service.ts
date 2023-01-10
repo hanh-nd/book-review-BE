@@ -107,6 +107,16 @@ export class NotificationService {
         }
     }
 
+    async getDetail(id: string) {
+        const result = await this.notificationModel
+            .findById(id)
+            .populate('targetId')
+            .populate('senderId')
+            .populate('receiverId')
+            .exec();
+        return result;
+    }
+
     async update(id: string, body: UpdateNotificationBody) {
         const result = await this.notificationModel.findByIdAndUpdate(id, body);
         return result;

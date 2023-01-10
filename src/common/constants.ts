@@ -57,18 +57,18 @@ export enum HttpStatus {
 }
 
 export enum ReportType {
-    REVIEW = 'REVIEW',
-    COMMENT = 'COMMENT',
+    REVIEW = 'Review',
+    COMMENT = 'Comment',
 }
 
 export enum NotificationModule {
-    REVIEW = 'REVIEW',
-    COMMENT = 'COMMENT',
+    REVIEW = 'Review',
+    COMMENT = 'Comment',
 }
 
 export enum NotificationAction {
-    LIKE = 'LIKE',
-    COMMENT = 'COMMENT',
+    LIKE = 'Like',
+    COMMENT = 'Comment',
 }
 
 export enum SocketEvent {

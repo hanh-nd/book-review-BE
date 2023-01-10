@@ -163,7 +163,7 @@ export class UserService {
                       bookShelfIds: new ObjectId(bookId),
                   },
               };
-        await toUpdateUser.update(updateQuery);
+        await toUpdateUser.updateOne(updateQuery);
         const updatedUser = await this.findById(toUpdateUser._id);
         return updatedUser;
     }

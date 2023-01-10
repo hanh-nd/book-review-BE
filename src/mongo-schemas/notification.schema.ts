@@ -19,27 +19,25 @@ import { MongoBaseSchema } from './mongo.base.schema';
 export class Notification extends MongoBaseSchema {
     _id: string;
 
-    @Prop({ required: true, type: Types.ObjectId })
+    @Prop({ required: true, type: Types.ObjectId, refPath: 'module' })
     targetId: ObjectId;
 
     @Prop({
         required: true,
         type: String,
-        enum: Object.keys(NotificationModule),
     })
     module: NotificationModule;
 
     @Prop({
         required: true,
         type: String,
-        enum: Object.keys(NotificationAction),
     })
     action: NotificationAction;
 
-    @Prop({ required: true, type: Types.ObjectId })
+    @Prop({ required: true, type: Types.ObjectId, ref: 'User' })
     senderId: ObjectId;
 
-    @Prop({ required: true, type: Types.ObjectId })
+    @Prop({ required: true, type: Types.ObjectId, ref: 'User' })
     receiverId: ObjectId;
 
     @Prop({ required: false, type: Boolean, default: false })

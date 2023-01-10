@@ -48,9 +48,12 @@ export class NotificationGateway {
             senderId,
             receiverId: authorId,
         });
+        const notification = await this.notificationService.getDetail(
+            createdNotification._id,
+        );
         this.socketGateway.server
             .to(authorId)
-            .emit(SocketEvent.USER_NOTIFICATION, createdNotification);
+            .emit(SocketEvent.USER_NOTIFICATION, notification);
         return;
     }
 
@@ -74,9 +77,12 @@ export class NotificationGateway {
             senderId,
             receiverId: authorId,
         });
+        const notification = await this.notificationService.getDetail(
+            createdNotification._id,
+        );
         this.socketGateway.server
             .to(authorId)
-            .emit(SocketEvent.USER_NOTIFICATION, createdNotification);
+            .emit(SocketEvent.USER_NOTIFICATION, notification);
         return;
     }
 }

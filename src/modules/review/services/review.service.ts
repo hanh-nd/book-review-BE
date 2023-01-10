@@ -172,7 +172,7 @@ export class ReviewService {
                   },
               };
 
-        await toUpdateReview.update(updateQuery);
+        await toUpdateReview.updateOne(updateQuery);
         return toUpdateReview;
     }
 

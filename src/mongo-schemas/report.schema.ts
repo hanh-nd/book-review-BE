@@ -21,7 +21,7 @@ export class Report extends MongoBaseSchema {
     @Prop({ required: true, type: Types.ObjectId })
     targetId: ObjectId;
 
-    @Prop({ required: true, type: String, enum: Object.keys(ReportType) })
+    @Prop({ required: true, type: String })
     type: ReportType;
 
     @Prop({ required: true, type: Types.ObjectId })
