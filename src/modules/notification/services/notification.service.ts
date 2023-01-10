@@ -10,10 +10,8 @@ import {
 } from 'src/common/constants';
 import { MongoCollection } from 'src/mongo-schemas/constant';
 import { Notification } from 'src/mongo-schemas/notification.schema';
-import {
-    ICreateNotificationBody,
-    INotificationGetListQuery,
-} from '../interfaces';
+import { CreateNotificationBody } from '../notification.dto';
+import { INotificationGetListQuery } from '../notification.interfaces';
 
 @Injectable()
 export class NotificationService {
@@ -31,7 +29,7 @@ export class NotificationService {
         return matchQuery;
     }
 
-    async create(createNotificationBody: ICreateNotificationBody) {
+    async create(createNotificationBody: CreateNotificationBody) {
         const { targetId, senderId, receiverId } = createNotificationBody;
         const createdNotification = await this.notificationModel.create({
             ...createNotificationBody,

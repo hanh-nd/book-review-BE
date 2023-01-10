@@ -12,7 +12,7 @@ import {
 } from 'src/common/constants';
 import { SocketToken } from 'src/common/guards/socket-token.guard';
 import { Notification } from 'src/mongo-schemas/notification.schema';
-import { NotificationService } from './services/notification.service';
+import { NotificationService } from '../notification/services/notification.service';
 import { SocketGateway } from './socket-gateway';
 
 @WebSocketGateway({
