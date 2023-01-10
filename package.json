@@ -29,6 +29,8 @@
     "@nestjs/mapped-types": "^1.2.0",
     "@nestjs/mongoose": "^9.2.1",
     "@nestjs/platform-express": "^9.0.0",
+    "@nestjs/platform-socket.io": "^9.2.1",
+    "@nestjs/websockets": "^9.2.1",
     "@types/lodash": "^4.14.191",
     "argon2": "^0.30.2",
     "joi": "^17.7.0",

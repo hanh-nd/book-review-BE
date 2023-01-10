@@ -60,3 +60,7 @@ export enum ReportType {
     REVIEW = 'REVIEW',
     COMMENT = 'COMMENT',
 }
+
+export enum SocketEvent {
+    USER_LIKE_REVIEW = 'USER_LIKE_REVIEW',
+}
