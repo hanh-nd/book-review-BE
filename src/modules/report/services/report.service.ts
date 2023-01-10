@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { ObjectId } from 'mongodb';
 import { Model } from 'mongoose';
 import {
     DEFAULT_PAGE_LIMIT,
@@ -8,6 +9,7 @@ import {
     OrderDirection,
 } from 'src/common/constants';
 import { Report } from 'src/mongo-schemas/report.schema';
+import { CreateReportBody, UpdateReportBody } from '../report.dto';
 import { IReportGetListQuery } from '../report.interface';
 
 @Injectable()
@@ -15,7 +17,23 @@ export class ReportService {
     constructor(@InjectModel(Report.name) private reportModel: Model<Report>) {}
 
     generateMatchGetListQuery(query: IReportGetListQuery) {
-        return {};
+        const { resolved } = query;
+        const matchQuery: any = {};
+        if (resolved) {
+            matchQuery.resolved = resolved;
+        }
+
+        return matchQuery;
+    }
+
+    async create(body: CreateReportBody) {
+        const { reporterId, targetId } = body;
+        const createdReport = await this.reportModel.create({
+            ...body,
+            reporterId: new ObjectId(reporterId),
+            targetId: new ObjectId(targetId),
+        });
+        return createdReport;
     }
 
     async getList(query: IReportGetListQuery) {
@@ -63,8 +81,8 @@ export class ReportService {
         }
     }
 
-    async delete(id: string) {
-        const result = await this.reportModel.findByIdAndDelete(id);
+    async update(id: string, body: UpdateReportBody) {
+        const result = await this.reportModel.findByIdAndUpdate(id, body);
         return result;
     }
 }

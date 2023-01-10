@@ -6,5 +6,5 @@ export type NotificationDocument = Document<Notification>;
 
 export interface INotificationGetListQuery extends ICommonGetListQuery {
     receiverId: string;
+    isRead?: boolean;
 }
-

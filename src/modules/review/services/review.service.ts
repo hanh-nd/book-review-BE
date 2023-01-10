@@ -2,8 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
 import { Model } from 'mongoose';
+import { ReportService } from 'src/modules/report/services/report.service';
 import { MongoCollection } from 'src/mongo-schemas/constant';
-import { Report } from 'src/mongo-schemas/report.schema';
 import { Review } from 'src/mongo-schemas/review.schema';
 import { IReviewGetListQuery } from '../review.interface';
 import {
@@ -22,7 +22,7 @@ import {
 export class ReviewService {
     constructor(
         @InjectModel(Review.name) private reviewModel: Model<Review>,
-        @InjectModel(Report.name) private reportModel: Model<Report>,
+        private reportService: ReportService,
     ) {}
 
     generateMatchGetListQuery(query: IReviewGetListQuery) {
@@ -186,10 +186,11 @@ export class ReviewService {
         reviewId: string,
         body: ReportReviewBody,
     ) {
-        const createdReport = await this.reportModel.create({
-            ...body,
-            reporterId: new ObjectId(reporterId),
-            targetId: new ObjectId(reviewId),
+        const { description } = body;
+        const createdReport = await this.reportService.create({
+            description,
+            reporterId,
+            targetId: reviewId,
             type: ReportType.REVIEW,
         });
         return createdReport;

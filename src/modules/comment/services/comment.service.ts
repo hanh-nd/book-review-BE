@@ -9,9 +9,9 @@ import {
     OrderDirection,
     ReportType,
 } from 'src/common/constants';
+import { ReportService } from 'src/modules/report/services/report.service';
 import { Comment } from 'src/mongo-schemas/comment.schema';
 import { MongoCollection } from 'src/mongo-schemas/constant';
-import { Report } from 'src/mongo-schemas/report.schema';
 import {
     CreateCommentBody,
     ReportCommentBody,
@@ -22,7 +22,7 @@ import { ICommentGetListQuery } from '../comment.interface';
 export class CommentService {
     constructor(
         @InjectModel(Comment.name) private commentModel: Model<Comment>,
-        @InjectModel(Report.name) private reportModel: Model<Report>,
+        private reportService: ReportService,
     ) {}
 
     generateMatchGetListQuery(query: ICommentGetListQuery) {
@@ -367,10 +367,11 @@ export class CommentService {
         commentId: string,
         body: ReportCommentBody,
     ) {
-        const createdReport = await this.reportModel.create({
-            ...body,
-            reporterId: new ObjectId(reporterId),
-            targetId: new ObjectId(commentId),
+        const { description } = body;
+        const createdReport = await this.reportService.create({
+            description,
+            reporterId,
+            targetId: commentId,
             type: ReportType.COMMENT,
         });
         return createdReport;

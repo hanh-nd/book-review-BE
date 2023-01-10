@@ -10,7 +10,10 @@ import {
 } from 'src/common/constants';
 import { MongoCollection } from 'src/mongo-schemas/constant';
 import { Notification } from 'src/mongo-schemas/notification.schema';
-import { CreateNotificationBody } from '../notification.dto';
+import {
+    CreateNotificationBody,
+    UpdateNotificationBody,
+} from '../notification.dto';
 import { INotificationGetListQuery } from '../notification.interfaces';
 
 @Injectable()
@@ -21,10 +24,13 @@ export class NotificationService {
     ) {}
 
     generateMatchGetListQuery(query: INotificationGetListQuery) {
-        const { receiverId } = query;
+        const { receiverId, isRead } = query;
         const matchQuery: any = {};
         if (receiverId) {
             matchQuery.receiverId = new ObjectId(receiverId);
+        }
+        if (isRead) {
+            matchQuery.isRead = isRead;
         }
         return matchQuery;
     }
@@ -99,5 +105,10 @@ export class NotificationService {
         } catch (error) {
             throw error;
         }
+    }
+
+    async update(id: string, body: UpdateNotificationBody) {
+        const result = await this.notificationModel.findByIdAndUpdate(id, body);
+        return result;
     }
 }

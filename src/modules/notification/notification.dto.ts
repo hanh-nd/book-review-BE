@@ -7,3 +7,7 @@ export class CreateNotificationBody {
     senderId: string;
     receiverId: string;
 }
+
+export class UpdateNotificationBody {
+    isRead: boolean;
+}

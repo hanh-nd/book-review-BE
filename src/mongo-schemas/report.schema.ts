@@ -29,6 +29,9 @@ export class Report extends MongoBaseSchema {
 
     @Prop({ required: false, type: String, default: null })
     description: string;
+
+    @Prop({ required: false, type: Boolean, default: false })
+    resolved: boolean;
 }
 
 const BaseReportSchema = SchemaFactory.createForClass(Report);

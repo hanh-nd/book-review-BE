@@ -41,6 +41,9 @@ export class Notification extends MongoBaseSchema {
 
     @Prop({ required: true, type: Types.ObjectId })
     receiverId: ObjectId;
+
+    @Prop({ required: false, type: Boolean, default: false })
+    isRead: boolean;
 }
 
 const BaseNotificationSchema = SchemaFactory.createForClass(Notification);
