@@ -61,6 +61,19 @@ export enum ReportType {
     COMMENT = 'COMMENT',
 }
 
+export enum NotificationModule {
+    REVIEW = 'REVIEW',
+    COMMENT = 'COMMENT',
+}
+
+export enum NotificationAction {
+    LIKE = 'LIKE',
+    COMMENT = 'COMMENT',
+}
+
 export enum SocketEvent {
-    USER_LIKE_REVIEW = 'USER_LIKE_REVIEW',
+    USER_LIKE = 'USER_LIKE',
+    USER_COMMENT = 'USER_COMMENT',
+
+    USER_NOTIFICATION = 'USER_NOTIFICATION',
 }

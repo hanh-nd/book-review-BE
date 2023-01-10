@@ -1,9 +1,4 @@
-import {
-    Body,
-    Controller,
-    InternalServerErrorException,
-    Post,
-} from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { SuccessResponse } from 'src/common/helper/response';
 import { JoiValidationPipe, TrimBodyPipe } from 'src/common/pipes';
 import { ILoginBody, IRegisterBody } from './auth.dto';

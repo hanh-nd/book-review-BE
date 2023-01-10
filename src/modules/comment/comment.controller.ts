@@ -8,7 +8,7 @@ import {
     Post,
     Query,
     Req,
-    UseGuards
+    UseGuards,
 } from '@nestjs/common';
 import { AccessTokenGuard } from 'src/common/guards';
 import { SuccessResponse } from 'src/common/helper/response';
@@ -16,18 +16,18 @@ import { RequestWithUser } from 'src/common/interfaces';
 import {
     JoiValidationPipe,
     RemoveEmptyQueryPipe,
-    TrimBodyPipe
+    TrimBodyPipe,
 } from 'src/common/pipes';
 import {
     CreateCommentBody,
     ReportCommentBody,
-    UpdateCommentBody
+    UpdateCommentBody,
 } from './comment.dto';
 import { ICommentGetListQuery } from './comment.interface';
 import {
     commentGetListSchema,
     createCommentSchema,
-    updateCommentSchema
+    updateCommentSchema,
 } from './comment.validator';
 import { CommentService } from './services/comment.service';
 

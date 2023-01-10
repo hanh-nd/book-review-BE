@@ -7,7 +7,7 @@ import {
     DEFAULT_PAGE_VALUE,
     OrderBy,
     OrderDirection,
-    ReportType
+    ReportType,
 } from 'src/common/constants';
 import { Comment } from 'src/mongo-schemas/comment.schema';
 import { MongoCollection } from 'src/mongo-schemas/constant';
@@ -15,7 +15,7 @@ import { Report } from 'src/mongo-schemas/report.schema';
 import {
     CreateCommentBody,
     ReportCommentBody,
-    UpdateCommentBody
+    UpdateCommentBody,
 } from '../comment.dto';
 import { ICommentGetListQuery } from '../comment.interface';
 @Injectable()

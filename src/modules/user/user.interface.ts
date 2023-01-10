@@ -4,4 +4,4 @@ import { User } from 'src/mongo-schemas/user.schema';
 
 export type UserDocument = Document<User>;
 
-export interface IUserGetListQuery extends ICommonGetListQuery {}
+export type IUserGetListQuery = ICommonGetListQuery;
