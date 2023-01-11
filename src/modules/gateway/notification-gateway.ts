@@ -2,13 +2,13 @@ import { UseGuards } from '@nestjs/common';
 import {
     SubscribeMessage,
     WebSocketGateway,
-    WsResponse,
+    WsResponse
 } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
 import {
     NotificationAction,
     NotificationModule,
-    SocketEvent,
+    SocketEvent
 } from 'src/common/constants';
 import { SocketToken } from 'src/common/guards/socket-token.guard';
 import { Notification } from 'src/mongo-schemas/notification.schema';
@@ -72,7 +72,7 @@ export class NotificationGateway {
         const senderId = client.user.sub;
         const createdNotification = await this.notificationService.create({
             targetId,
-            action: NotificationAction.LIKE,
+            action: NotificationAction.COMMENT,
             module,
             senderId,
             receiverId: authorId,
