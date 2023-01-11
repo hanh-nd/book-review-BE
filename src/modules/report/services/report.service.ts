@@ -8,6 +8,7 @@ import {
     OrderBy,
     OrderDirection,
 } from 'src/common/constants';
+import { MongoCollection } from 'src/mongo-schemas/constant';
 import { Report } from 'src/mongo-schemas/report.schema';
 import { CreateReportBody, UpdateReportBody } from '../report.dto';
 import { IReportGetListQuery } from '../report.interface';
@@ -17,10 +18,10 @@ export class ReportService {
     constructor(@InjectModel(Report.name) private reportModel: Model<Report>) {}
 
     generateMatchGetListQuery(query: IReportGetListQuery) {
-        const { resolved } = query;
+        const { resolved = null } = query;
         const matchQuery: any = {};
-        if (resolved) {
-            matchQuery.resolved = resolved;
+        if (resolved !== null) {
+            matchQuery.resolved = `${resolved}` === 'true';
         }
 
         return matchQuery;
@@ -58,6 +59,48 @@ export class ReportService {
                     $limit: +limit,
                 },
                 {
+                    $lookup: {
+                        from: MongoCollection.REVIEW,
+                        localField: 'targetId',
+                        foreignField: '_id',
+                        as: 'temp_target_1',
+                    },
+                },
+                {
+                    $set: {
+                        targetId2: '$targetId',
+                    },
+                },
+                {
+                    $lookup: {
+                        from: MongoCollection.COMMENT,
+                        localField: 'targetId2',
+                        foreignField: '_id',
+                        as: 'temp_target_2',
+                    },
+                },
+                {
+                    $project: {
+                        _id: 1,
+                        targetId: 1,
+                        type: 1,
+                        reporterId: 1,
+                        description: 1,
+                        resolved: 1,
+                        target: {
+                            $concatArrays: ['$temp_target_1', '$temp_target_2'],
+                        },
+                    },
+                },
+                {
+                    $lookup: {
+                        from: MongoCollection.USER,
+                        localField: 'reporterId',
+                        foreignField: '_id',
+                        as: 'reporter',
+                    },
+                },
+                {
                     $sort: {
                         [orderBy]:
                             orderDirection === OrderDirection.ASC ? 1 : -1,
@@ -74,7 +117,7 @@ export class ReportService {
                     },
                 },
             ]);
-            result.totalItems = result.totalItems[0].count;
+            result.totalItems = result.totalItems?.[0]?.count || 0;
             return result;
         } catch (error) {
             throw error;
