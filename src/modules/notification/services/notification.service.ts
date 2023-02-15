@@ -100,7 +100,7 @@ export class NotificationService {
                     },
                 },
             ]);
-            result.totalItems = result.totalItems[0].count;
+            result.totalItems = result.totalItems?.[0]?.count || 0;
             return result;
         } catch (error) {
             throw error;

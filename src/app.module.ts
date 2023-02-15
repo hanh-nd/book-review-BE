@@ -6,6 +6,7 @@ import { AppController } from './app.controller';
 import { MongoModule } from './common/services/mongo.service';
 import { AuthModule } from './modules/auth/auth.module';
 import { BookModule } from './modules/book/book.module';
+import { ChatModule } from './modules/chat/chat.module';
 import { CommentModule } from './modules/comment/comment.module';
 import { SocketModule } from './modules/gateway/socket.module';
 import { ReviewModule } from './modules/review/review.module';
@@ -24,6 +25,7 @@ import { UserModule } from './modules/user/user.module';
         ReviewModule,
         UserModule,
         SocketModule,
+        ChatModule,
     ],
     providers: [JwtService],
     controllers: [AppController],

@@ -56,13 +56,16 @@ export class SocketGateway
             throw new WsException('Invalid token');
         }
 
-        const user = this.jwtService.verify<UserToken>(token, {
-            secret: this.configService.get<string>(
-                ConfigKey.JWT_ACCESS_TOKEN_SECRET,
-            ),
-        });
+        try {
+            const user = this.jwtService.verify<UserToken>(token, {
+                secret: this.configService.get<string>(
+                    ConfigKey.JWT_ACCESS_TOKEN_SECRET,
+                ),
+            });
 
-        const { sub: userId } = user;
-        client.join(`${userId}`);
+            const { sub: userId } = user;
+            console.log('join', `${userId}`);
+            client.join(`${userId}`);
+        } catch (error) {}
     }
 }

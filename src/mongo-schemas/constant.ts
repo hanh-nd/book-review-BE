@@ -5,4 +5,6 @@ export enum MongoCollection {
     COMMENT = 'Comment',
     REPORT = 'Report',
     NOTIFICATION = 'Notification',
+    CHAT = 'Chat',
+    MESSAGE = 'Message',
 }
